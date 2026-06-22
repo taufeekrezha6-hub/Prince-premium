@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prince Premium | Sports Wear & Apparel Industry</title>
+    
+    <!-- Firebase Core and Firestore SDK Scripts (Free Database Integration) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* Global Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { color: #2d3748; line-height: 1.6; background-color: #f7fafc; padding-bottom: 60px; }
+        a { text-decoration: none; color: inherit; }
+
+        /* Header & Navigation */
+        header { background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo { font-size: 26px; font-weight: 800; color: #1a365d; letter-spacing: 0.5px; text-transform: uppercase; }
+        .logo span { color: #e53e3e; }
+        .nav-links { display: flex; list-style: none; }
+        .nav-links li { margin-left: 25px; }
+        .nav-links a { font-weight: 600; color: #4a5568; transition: color 0.2s; }
+        .nav-links a:hover { color: #e53e3e; }
+
+        /* Hero Section */
+        .hero { background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200') no-repeat center center/cover; height: 65vh; display: flex; justify-content: center; align-items: center; text-align: center; color: #fff; padding: 20px; }
+        .hero-content { max-width: 800px; }
+        .hero-content h1 { font-size: 52px; margin-bottom: 15px; font-weight: 800; text-transform: uppercase; }
+        .hero-content p { font-size: 22px; margin-bottom: 30px; color: #e2e8f0; }
+        .badge { background-color: #e53e3e; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 15px; text-transform: uppercase; }
+        .btn { background-color: #e53e3e; color: #fff; padding: 14px 35px; border-radius: 5px; font-weight: 700; transition: all 0.3s; border: none; cursor: pointer; text-transform: uppercase; display: inline-block; }
+        .btn:hover { background-color: #c53030; transform: translateY(-2px); }
+
+        /* Sections General */
+        section { padding: 70px 20px; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; font-size: 34px; margin-bottom: 40px; position: relative; color: #1a365d; text-transform: uppercase; font-weight: 800; }
+        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: #e53e3e; margin: 10px auto 0; border-radius: 2px; }
+
+        /* Products Grid */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; }
+        .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.3s; border: 1px solid #edf2f7; text-align: center; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+        .product-img { height: 240px; background-color: #edf2f7; background-size: cover; background-position: center; }
+        .product-info { padding: 20px; }
+        .product-info h3 { margin-bottom: 8px; color: #1a365d; font-size: 20px; }
+        .product-info p { font-size: 14px; color: #4a5568; }
+
+        /* Order Booking Forms Section */
+        .order-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; margin-top: 20px; }
+        .order-box { background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #edf2f7; }
+        .order-box.wholesale-box { border-top: 6px solid #1a365d; }
+        .order-box.retail-box { border-top: 6px solid #e53e3e; }
+        .order-box h3 { font-size: 22px; color: #1a365d; margin-bottom: 20px; text-align: center; text-transform: uppercase; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #4a5568; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 15px; background-color: #f7fafc; }
+
+        /* Floating WhatsApp Button */
+        .whatsapp-float { position: fixed; width: 60px; height: 60px; bottom: 20px; right: 20px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 2px 2px 10px rgba(0,0,0,0.3); z-index: 999; display: flex; justify-content: center; align-items: center; text-decoration: none; font-weight: bold; }
+        .whatsapp-float span { font-size: 28px; }
+
+        /* Admin Panel Styles (Hidden by default) */
+        #admin-panel { background: #1e293b; color: #fff; padding: 30px; border-radius: 12px; margin: 30px auto; max-width: 800px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        #admin-panel h2 { color: #f1f5f9; margin-bottom: 20px; text-align: center; text-transform: uppercase; font-size: 24px; border-bottom: 2px solid #475569; padding-bottom: 10px; }
+        .admin-form-group { margin-bottom: 15px; }
+        .admin-form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #cbd5e1; }
+        .admin-form-group input, .admin-form-group select { width: 100%; padding: 10px; border: 1px solid #475569; border-radius: 6px; background: #334155; color: #fff; }
+        .admin-btn { background-color: #10b981; color: white; padding: 12px; border: none; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 16px; margin-top: 10px; }
+        .admin-btn:hover { background-color: #059669; }
+        
+        /* Manage Products List in Admin */
+        .manage-products { margin-top: 30px; background: #334155; padding: 15px; border-radius: 8px; }
+        .manage-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #475569; }
+        .manage-item:last-child { border-bottom: none; }
+        .delete-btn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .delete-btn:hover { background: #dc2626; }
+
+        /* Footer */
+        footer { background: #0f172a; color: #94a3b8; text-align: center; padding: 30px 20px; margin-top: 50px; font-size: 14px; }
+        footer strong { color: #fff; }
+        .admin-login-link { display: inline-block; margin-top: 15px; color: #64748b; font-size: 12px; cursor: pointer; text-decoration: underline; }
+        .admin-login-link:hover { color: #e53e3e; }
+
+        /* Responsive */
+        @media (max-width: 768px) { .nav-links { display: none; } .hero-content h1 { font-size: 34px; } .hero-content p { font-size: 18px; } .order-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <!-- WhatsApp Floating Icon -->
+    <a href="https://wa.me/918250502885?text=Hello%20Prince%20Premium!%20Mujhe%20aapke%20products%20ke%20baare%20mein%20puchna%20hai." class="whatsapp-float" target="_blank" title="Chat on WhatsApp">
+        <span>🗪</span>
+    </a>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">Prince<span>Premium</span> 👑</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#catalogues">New Catalogues</a></li>
+                <li><a href="#booking">Order Book</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="hero" id="home">
+        <div class="hero-content">
+            <div class="badge">Wholesale & Retail Store</div>
+            <h1>Prince Premium</h1>
+            <p>High-Quality Sports Trousers, Petticoats, T-Shirts & Windcheater Jackets</p>
+            <a href="#booking" class="btn">Book Online Order</a>
+        </div>
+    </div>
+
+    <!-- Main Products Section -->
+    <section id="products">
+        <h2 class="section-title">Our Main Products</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400');"></div>
+                <div class="product-info"><h3>Sports Trousers</h3><p>Stretchable track pants for premium comfort.</p></div>
+            </div>
+            <div class="product-card">
+                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=400');"></div>
+                <div class="product-info"><h3>Premium T-Shirts</h3><p>High-grade fabric in wholesale and retail prices.</p></div>
+            </div>
+            <div class="product-card">
+                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=400');"></div>
+                <div class="product-info"><h3>Windcheater Jackets</h3><p>Lightweight, strong wind and water protection.</p></div>
+            </div>
+            <div class="product-card">
+                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=400');"></div>
+                <div class="product-info"><h3>Cotton Petticoats</h3><p>Pure breathable cotton fabric with tight stitching.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Database Catalog Section (Aapki Upload ki hui photos yahan dikhengi) -->
+    <section id="catalogues" style="background-color: #edf2f7; max-width: 100%;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <h2 class="section-title">Latest Collections / Naye Catalogues</h2>
+            <p style="text-align: center; margin-bottom: 40px; color: #4a5568;">Hamare naye designs aur live stock ki jhalak yahan dekhein:</p>
+            
+            <!-- Database Products Grid -->
+            <div class="product-grid" id="dynamic-product-grid">
+                <!-- Data will load here from Firestore. If empty, default template shows below -->
+                <p id="no-products-msg" style="text-align: center; grid-column: 1/-1; color: #718096; font-style: italic;">No custom products uploaded yet. Use Admin Panel below to add items!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hidden Password-Protected Admin Panel -->
+    <div id="admin-panel">
+        <h2>👑 Prince Premium Admin Dashboard</h2>
+        <form id="upload-form">
+            <div class="admin-form-group">
+                <label>Product Title / Naam</label>
+                <input type="text" id="prod-title" required placeholder="Jaise: Premium Blue Trackpant">
+            </div>
+            <div class="admin-form-group">
+                <label>Short Description / Details</label>
+                <input type="text" id="prod-desc" required placeholder="Jaise: Wholesale Pack, Available in M, L, XL sizes">
+            </div>
+            <div class="admin-form-group">
+                <label>Choose Garment Photo (Direct Mobile Upload)</label>
+                <input type="file" id="prod-image" accept="image/*" required>
+            </div>
+            <button type="submit" class="admin-btn" id="submit-btn">Upload & Make Live 🚀</button>
+        </form>
+
+        <div class="manage-products">
+            <h3 style="margin-bottom: 10px; color: #f1f5f9; font-size: 16px;">Manage Uploaded Items (Delete Karein)</h3>
+            <div id="manage-list">
+                <!-- List of items with delete buttons will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Forms Section -->
+    <section id="booking">
+        <h2 class="section-title">Online Order Booking Desk</h2>
+        <p style="text-align: center; margin-bottom: 40px; color: #4a5568;">Apne business ya personal use ke hisaab se sahi form chun kar apna order book karein:</p>
+        
+        <div class="order-container">
+            <!-- Wholesale Form -->
+            <div class="order-box wholesale-box">
+                <h3>🗲 Wholesale Bulk Booking (Thok Order)</h3>
+                <form action="#" method="POST" onsubmit="alert('Wholesale Booking Received! Hum jald hi aapke Business par sampark karenge.'); return false;">
+                    <div class="form-group"><label>Dukan / Company Ka Naam</label><input type="text" required placeholder="Enter Shop / Firm Name"></div>
+                    <div class="form-group"><label>Wholesaler Ka Naam</label><input type="text" required placeholder="Enter Your Full Name"></div>
+                    <div class="form-group"><label>Mobile / WhatsApp No.</label><input type="tel" required placeholder="Enter Mobile Number"></div>
+                    <div class="form-group">
+                        <label>Product Ka Chunaav</label>
+                        <select required>
+                            <option value="">-- Select Product --</option>
+                            <option value="trousers">Sports Trousers (Bulk)</option>
+                            <option value="tshirts">T-Shirts (Bulk)</option>
+                            <option value="jackets">Windcheater Jackets (Bulk)</option>
+                            <option value="petticoats">Petticoats (Bulk)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Bulk Quantity Details</label><textarea rows="3" required placeholder="Jaise: Sports Trouser - 200 Pieces (M, L, XL)..."></textarea></div>
+                    <button type="submit" class="btn" style="width: 100%; background-color: #1a365d;">Submit Wholesale Booking</button>
+                </form>
+            </div>
+
+            <!-- Retail Form -->
+            <div class="order-box retail-box">
+                <h3>🛍 Retail Direct Order (Chutkar Order)</h3>
+                <form action="#" method="POST" onsubmit="alert('Retail Order Booked! Hum packing aur delivery ke liye aapse baat karenge.'); return false;">
+                    <div class="form-group"><label>Customer Ka Naam</label><input type="text" required placeholder="Enter Your Name"></div>
+                    <div class="form-group"><label>Mobile / Delivery Number</label><input type="tel" required placeholder="Enter Mobile Number"></div>
+                    <div class="form-group"><label>Delivery Ka Pura Pata (Address)</label><input type="text" required placeholder="Enter Full Address with Pincode"></div>
+                    <div class="form-group">
+                        <label>Kaunsa Item Chahiye?</label>
+                        <select required>
+                            <option value="">-- Select Product --</option>
+                            <option value="trouser-single">Sports Trouser (1-5 Pcs)</option>
+                            <option value="tshirt-single">Premium T-Shirt (1-5 Pcs)</option>
+                            <option value="jacket-single">Windcheater Jacket (1-2 Pcs)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Size aur Color ki jankari</label><textarea rows="3" required placeholder="Jaise: Size L, Black Color..."></textarea></div>
+                    <button type="submit" class="btn" style="width: 100%;">Book Retail Order</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 <strong>Prince Premium</strong>. Quality Garments Factory. All Rights Reserved.</p>
+        <span class="admin-login-link" onclick="loginAdmin()">👑 Admin Login</span>
+    </footer>
+
+    <!-- Firebase Connection and Logic Script -->
+    <script>
+        // Aapke screenshot (36424.png) se nikali hui exact configurations
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnAObkRA9eYPwpk44Q6YS5NY1BlZUdAeM",
+            authDomain: "prince-primium.firebaseapp.com",
+            projectId: "prince-primium",
+            storageBucket: "prince-primium.firebasestorage.app",
+            messagingSenderId: "182442384742",
+            appId: "1:182442384742:web:3dce7d5090e5d2d4e33ca7"
+        };
+
+        // Initialize Firebase & Firestore Database
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const grid = document.getElementById('dynamic-product-grid');
+        const manageList = document.getElementById('manage-list');
+        const noProdMsg = document.getElementById('no-products-msg');
+
+        // 1. Database se live items nikal kar page par dikhana
+        db.collection('products').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+            grid.innerHTML = '';
+            manageList.innerHTML = '';
+            
+            if(snapshot.empty) {
+                grid.appendChild(noProdMsg);
+                manageList.innerHTML = '<p style="color: #cbd5e1; font-size:13px;">No items to delete.</p>';
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const id = doc.id;
+
+                // Website Front page ke grid mein photo jodna
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.style.border = '2px dashed #cbd5e0';
+                card.innerHTML = `
+                    <div class="product-img" style="background-image: url('${data.image}');"></div>
+                    <div class="product-info">
+                        <span style="background: #10b981; color: white; padding: 2px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">LIVE STOCK</span>
+                        <h3 style="margin-top: 5px;">${data.title}</h3>
+                        <p>${data.desc}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+
+                // Admin Dashboard mein delete karne wali list banana
+                const manageItem = document.createElement('div');
+                manageItem.className = 'manage-item';
+                manageItem.innerHTML = `
+                    <span style="font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;">${data.title}</span>
+                    <button class="delete-btn" onclick="deleteProduct('${id}')">Delete</button>
+                `;
+                manageList.appendChild(manageItem);
+            });
+        });
+
+        // 2. Chhupa hua Admin Panel kholne ka code (Password check)
+        function loginAdmin() {
+            const pass = prompt("Enter Prince Premium Admin Password:");
+            if (pass === "prince123") {
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
+                alert("Welcome Taufeek Bhai! Admin panel niche khul gaya hai.");
+            } else {
+                alert("Galat Password! Sirf Owner hi photo upload kar sakte hain.");
+            }
+        }
+
+        // 3. Image ko Compress karke Database mein save karne ka advanced hacking function
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const title = document.getElementById('prod-title').value;
+            const desc = document.getElementById('prod-desc').value;
+            const fileInput = document.getElementById('prod-image');
+            
+            if (fileInput.files.length === 0) return;
+            
+            btn.innerText = "Compressing & Uploading... Wait 5 sec";
+            btn.style.backgroundColor = "#64748b";
+            btn.disabled = true;
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                
+                img.onload = function() {
+                    // HTML5 Canvas ka use karke photo ka size 10 guna chota (compress) karna
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 500; // Mobile screen ke liye ekdum best width
+                    const MAX_HEIGHT = 500;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // High quality text base64 string mein badalna
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
+                    // Firestore database mein direct entry karna
+                    db.collection('products').add({
+                        title: title,
+                        desc: desc,
+                        image: compressedBase64,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        alert("🎉 Badhai Ho! Naya item kamyaabi se live ho gaya hai.");
+                        document.getElementById('upload-form').reset();
+                        btn.innerText = "Upload & Make Live 🚀";
+                        btn.style.backgroundColor = "#10b981";
+                        btn.disabled = false;
+                    }).catch((error) => {
+                        alert("Error updating database: " + error.message);
+                        btn.disabled = false;
+                    });
+                };
+            };
+        });
+
+        // 4. Purani ya biki hui product photo website se delete karne ka code
+        function deleteProduct(id) {
+            if (confirm("Kya aap sach mein is product ko website se hatana chahte hain?")) {
+                db.collection('products').doc(id).delete().then(() => {
+                    alert("Item deleted successfully!");
+                });
+            }
+        }
+    </script>
+</body>
+</html>
