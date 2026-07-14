@@ -3,384 +3,719 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prince Premium | Sports Wear & Apparel Industry</title>
+    <title>Prince Premium | Advanced 3D Interactive Showroom</title>
     
-    <!-- Firebase Core and Firestore SDK Scripts (Free Database Integration) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <style>
-        /* Global Styles */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { color: #2d3748; line-height: 1.6; background-color: #f7fafc; padding-bottom: 60px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: #e2e8f0;
+            line-height: 1.6;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f0728 100%);
+            padding-bottom: 60px;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
         a { text-decoration: none; color: inherit; }
 
-        /* Header & Navigation */
-        header { background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
-        .logo { font-size: 26px; font-weight: 800; color: #1a365d; letter-spacing: 0.5px; text-transform: uppercase; }
+        header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(229, 62, 98, 0.6);
+        }
         .logo span { color: #e53e3e; }
-        .nav-links { display: flex; list-style: none; }
-        .nav-links li { margin-left: 25px; }
-        .nav-links a { font-weight: 600; color: #4a5568; transition: color 0.2s; }
-        .nav-links a:hover { color: #e53e3e; }
 
-        /* Hero Section */
-        .hero { background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200') no-repeat center center/cover; height: 65vh; display: flex; justify-content: center; align-items: center; text-align: center; color: #fff; padding: 20px; }
-        .hero-content { max-width: 800px; }
-        .hero-content h1 { font-size: 52px; margin-bottom: 15px; font-weight: 800; text-transform: uppercase; }
-        .hero-content p { font-size: 22px; margin-bottom: 30px; color: #e2e8f0; }
-        .badge { background-color: #e53e3e; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 15px; text-transform: uppercase; }
-        .btn { background-color: #e53e3e; color: #fff; padding: 14px 35px; border-radius: 5px; font-weight: 700; transition: all 0.3s; border: none; cursor: pointer; text-transform: uppercase; display: inline-block; }
-        .btn:hover { background-color: #c53030; transform: translateY(-2px); }
-
-        /* Sections General */
-        section { padding: 70px 20px; max-width: 1200px; margin: 0 auto; }
-        .section-title { text-align: center; font-size: 34px; margin-bottom: 40px; position: relative; color: #1a365d; text-transform: uppercase; font-weight: 800; }
-        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: #e53e3e; margin: 10px auto 0; border-radius: 2px; }
-
-        /* Products Grid */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; }
-        .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.3s; border: 1px solid #edf2f7; text-align: center; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
-        .product-img { height: 240px; background-color: #edf2f7; background-size: cover; background-position: center; }
-        .product-info { padding: 20px; }
-        .product-info h3 { margin-bottom: 8px; color: #1a365d; font-size: 20px; }
-        .product-info p { font-size: 14px; color: #4a5568; }
-
-        /* Order Booking Forms Section */
-        .order-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; margin-top: 20px; }
-        .order-box { background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #edf2f7; }
-        .order-box.wholesale-box { border-top: 6px solid #1a365d; }
-        .order-box.retail-box { border-top: 6px solid #e53e3e; }
-        .order-box h3 { font-size: 22px; color: #1a365d; margin-bottom: 20px; text-align: center; text-transform: uppercase; }
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #4a5568; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 15px; background-color: #f7fafc; }
-
-        /* Floating Original WhatsApp Brand Button */
-        .whatsapp-float { position: fixed; width: 60px; height: 60px; bottom: 20px; right: 20px; z-index: 999; transition: transform 0.2s; display: block; }
-        .whatsapp-float:hover { transform: scale(1.1); }
-        .whatsapp-float img { width: 100%; height: 100%; display: block; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.3)); }
-
-        /* Admin Panel Styles (Hidden by default) */
-        #admin-panel { background: #1e293b; color: #fff; padding: 30px; border-radius: 12px; margin: 30px auto; max-width: 800px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        #admin-panel h2 { color: #f1f5f9; margin-bottom: 20px; text-align: center; text-transform: uppercase; font-size: 24px; border-bottom: 2px solid #475569; padding-bottom: 10px; }
-        .admin-form-group { margin-bottom: 15px; }
-        .admin-form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #cbd5e1; }
-        .admin-form-group input, .admin-form-group select { width: 100%; padding: 10px; border: 1px solid #475569; border-radius: 6px; background: #334155; color: #fff; }
-        .admin-btn { background-color: #10b981; color: white; padding: 12px; border: none; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 16px; margin-top: 10px; }
-        .admin-btn:hover { background-color: #059669; }
+        .hero {
+            background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200') no-repeat center center/cover;
+            height: 50vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #fff;
+            padding: 20px;
+            transform-style: preserve-3d;
+            transform: translateZ(-50px);
+        }
+        .hero-content { 
+            max-width: 800px;
+            transform: translateZ(50px); 
+        }
+        .hero-content h1 { font-size: 56px; margin-bottom: 15px; font-weight: 900; text-transform: uppercase; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .hero-content p { font-size: 24px; margin-bottom: 30px; color: #cbd5e1; }
+        .badge { background-color: #e53e3e; color: white; padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 15px; text-transform: uppercase; box-shadow: 0 0 15px rgba(229, 62, 62, 0.5); }
         
-        /* Manage Products List in Admin */
-        .manage-products { margin-top: 30px; background: #334155; padding: 15px; border-radius: 8px; }
-        .manage-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #475569; }
-        .manage-item:last-child { border-bottom: none; }
-        .delete-btn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .delete-btn:hover { background: #dc2626; }
+        .btn {
+            background: linear-gradient(135deg, #e53e3e 0%, #991b1b 100%); color: #fff; padding: 14px 35px; border-radius: 6px; font-weight: 700; transition: all 0.3s; border: none; cursor: pointer; text-transform: uppercase; display: inline-block;
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+        }
+        .btn:hover { transform: translateY(-3px) translateZ(10px); box-shadow: 0 8px 25px rgba(229, 62, 62, 0.6); }
 
-        /* Footer */
-        footer { background: #0f172a; color: #94a3b8; text-align: center; padding: 30px 20px; margin-top: 50px; font-size: 14px; }
+        .order-btn {
+            background: linear-gradient(135deg, #25d366 0%, #166534 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            width: 90%;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+        .order-btn:hover { background-color: #1ebd58; transform: scale(1.03); }
+
+        section { padding: 70px 20px; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; font-size: 36px; margin-bottom: 50px; color: #fff; text-transform: uppercase; font-weight: 800; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: #e53e3e; margin: 10px auto 0; border-radius: 2px; box-shadow: 0 0 10px #e53e3e; }
+        
+        .product-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 40px; 
+            transform-style: preserve-3d;
+        }
+
+        .product-card-container {
+            perspective: 1200px;
+            height: 520px;
+        }
+
+        .product-card { 
+            background: rgba(30, 27, 75, 0.4); 
+            border-radius: 16px; 
+            height: 100%;
+            width: 100%;
+            position: relative;
+            transform-style: preserve-3d; 
+            transition: transform 0.3s ease, box-shadow 0.3s; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            text-align: center; 
+            padding-bottom: 20px; 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .product-card:hover { 
+            box-shadow: 0 20px 40px rgba(229, 62, 98, 0.25);
+            border-color: rgba(229, 62, 98, 0.4);
+        }
+        
+        .product-img { 
+            height: 250px; 
+            background-color: #0f172a; 
+            background-size: cover; 
+            background-position: center; 
+            position: relative; 
+            cursor: zoom-in; 
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            transform: translateZ(20px);
+            overflow: hidden;
+        }
+        .product-media-file { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        
+        /* 360 Rotation Overlay Styles */
+        .btn-360-trigger {
+            position: absolute; bottom: 10px; right: 10px; background: rgba(229, 62, 62, 0.9); color: white; border: none; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; display: none; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .btn-360-trigger:hover { background: #e53e3e; transform: scale(1.05); }
+
+        .product-info { 
+            padding: 20px; 
+            transform: translateZ(30px);
+        }
+        .product-info h3 { margin-bottom: 8px; color: #fff; font-size: 22px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: capitalize; }
+        .product-info p { font-size: 14px; color: #94a3b8; margin-bottom: 10px; }
+
+        .whatsapp-float { position: fixed; width: 60px; height: 60px; bottom: 20px; right: 20px; background-color: #25d366; border-radius: 50px; box-shadow: 0 0 20px rgba(37,211,102,0.5); z-index: 999; display: flex; justify-content: center; align-items: center; transition: all 0.3s; }
+        .whatsapp-float:hover { transform: scale(1.1) rotate(15deg); }
+
+        .color-gallery-box {
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 12px;
+            border-radius: 8px;
+        }
+        .gallery-preview-container {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            justify-content: center;
+            min-height: 55px;
+        }
+        .mini-gallery-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mini-gallery-img:hover { transform: scale(1.15) translateZ(10px); border-color: #e53e3e; }
+        .mini-card-wrapper { position: relative; display: inline-block; }
+        
+        .del-mini-btn {
+            position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; cursor: pointer; line-height: 14px; text-align: center;
+            display: none; z-index: 10;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 3, 19, 0.95);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .image-modal img, .image-modal video {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+        }
+        .close-modal {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .admin-trigger-container { text-align: center; margin-top: 40px; background: rgba(255,255,255,0.03); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .admin-link { font-size: 13px; color: #94a3b8; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .admin-link:hover { color: #fff; }
+        
+        #secure-admin-panel { max-width: 600px; margin: 30px auto; background: #1e1b4b; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); display: none; }
+        .admin-auth-box input { padding: 12px; border: 1px solid rgba(255,255,255,0.2); background: #0f0728; color: white; border-radius: 6px; margin-right: 10px; }
+        .admin-control-group { margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.2); display: none; }
+        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #cbd5e1; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; background-color: #0f0728; color: white; }
+        
+        .cat-manager-box {
+            background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        footer { background: #090416; color: #64748b; text-align: center; padding: 40px 20px; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
         footer strong { color: #fff; }
-        .admin-login-link { display: inline-block; margin-top: 15px; color: #64748b; font-size: 12px; cursor: pointer; text-decoration: underline; }
-        .admin-login-link:hover { color: #e53e3e; }
-
-        /* Responsive */
-        @media (max-width: 768px) { .nav-links { display: none; } .hero-content h1 { font-size: 34px; } .hero-content p { font-size: 18px; } .order-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <!-- WhatsApp Floating Icon with Official High-Res Branded Logo asset -->
-    <a href="https://wa.me/919339874507?text=Hello%20Prince%20Premium!%20I%20want%20to%20inquire%20about%20your%20latest%20collection." class="whatsapp-float" target="_blank" title="Chat on WhatsApp">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Official Logo">
+    <!-- Zoomable Full Screen Modal -->
+    <div id="imageModal" class="image-modal" onclick="closeFullPreview()">
+        <span class="close-modal">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+
+    <!-- Floating WhatsApp -->
+    <a href="https://wa.me/919339874507?text=Hello%20Prince%20Premium!" class="whatsapp-float" target="_blank">
+        <svg width="35" height="35" fill="white" viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
     </a>
 
     <header>
         <div class="nav-container">
-            <div class="logo">Prince<span>Premium</span> 👑</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#products">Products</a></li>
-                <li><a href="#catalogues">New Catalogues</a></li>
-                <li><a href="#booking">Order Book</a></li>
-            </ul>
+            <div class="logo">Prince<span>Premium</span></div>
         </div>
     </header>
 
     <div class="hero" id="home">
         <div class="hero-content">
-            <div class="badge">Wholesale & Retail Store</div>
+            <div class="badge">Wholesale & Retail 3D Space</div>
             <h1>Prince Premium</h1>
-            <p>High-Quality Sports Trousers, Petticoats, T-Shirts & Windcheater Jackets</p>
-            <a href="#booking" class="btn">Book Online Order</a>
+            <p>Premium Sports Wear & Apparel Showroom</p>
         </div>
     </div>
 
-    <!-- Main Products Section -->
+    <!-- DYNAMIC PRODUCTS SECTION -->
     <section id="products">
-        <h2 class="section-title">Our Main Products</h2>
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400');"></div>
-                <div class="product-info"><h3>Sports Trousers</h3><p>Stretchable track pants for premium comfort.</p></div>
-            </div>
-            <div class="product-card">
-                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=400');"></div>
-                <div class="product-info"><h3>Premium T-Shirts</h3><p>High-grade fabric in wholesale and retail prices.</p></div>
-            </div>
-            <div class="product-card">
-                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=400');"></div>
-                <div class="product-info"><h3>Windcheater Jackets</h3><p>Lightweight, strong wind and water protection.</p></div>
-            </div>
-            <div class="product-card">
-                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=400');"></div>
-                <div class="product-info"><h3>Cotton Petticoats</h3><p>Pure breathable cotton fabric with tight stitching.</p></div>
-            </div>
+        <h2 class="section-title">Our Collections</h2>
+        <div class="product-grid" id="main-product-grid">
+            <!-- Dynamic Category Cards will inject here -->
         </div>
     </section>
 
-    <!-- Dynamic Database Catalog Section -->
-    <section id="catalogues" style="background-color: #edf2f7; max-width: 100%;">
-        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-            <h2 class="section-title">Latest Collections / Naye Catalogues</h2>
-            <p style="text-align: center; margin-bottom: 40px; color: #4a5568;">Hamare naye designs aur live stock ki jhalak yahan dekhein:</p>
+    <!-- Admin Panel Control -->
+    <div class="admin-trigger-container"><span class="admin-link" onclick="toggleAdminPanel()">👑 Admin Dashboard</span></div>
+    
+    <div id="secure-admin-panel">
+        <div class="admin-auth-box" id="auth-box">
+            <h3 style="margin-bottom:15px;">Admin Security Access</h3>
+            <input type="password" id="admin-pin" placeholder="Enter Secure PIN">
+            <button class="btn" style="padding: 10px 20px;" onclick="verifyAdminPIN()">Verify</button>
+        </div>
+        
+        <div class="admin-control-group" id="admin-controls">
+            <!-- Part A: Add New Category -->
+            <div class="cat-manager-box">
+                <h4 style="color:#e53e3e; margin-bottom:8px;">➕ Add New Category</h4>
+                <div class="form-group">
+                    <input type="text" id="new-cat-name" placeholder="Enter Category Name (e.g. Hoodies, Sarees)">
+                </div>
+                <button type="button" class="btn" onclick="addNewCategoryDynamic()" style="padding:8px 15px; font-size:12px; background:#10b981;">Create Category</button>
+            </div>
+
+            <!-- Part B: Upload Media items -->
+            <h3 style="color:#2b6cb0; margin-bottom:15px; border-top:1px solid #334155; padding-top:10px;">Upload Stock Photo / Video</h3>
             
-            <!-- Database Products Grid -->
-            <div class="product-grid" id="dynamic-product-grid">
-                <!-- Data will load here from Firestore. If empty, default template shows below -->
-                <p id="no-products-msg" style="text-align: center; grid-column: 1/-1; color: #718096; font-style: italic;">No custom products uploaded yet. Use Admin Panel below to add items!</p>
+            <div class="form-group">
+                <label>Select Category:</label>
+                <select id="upload-category">
+                    <!-- Dynamic Options Filled by JS -->
+                </select>
             </div>
-        </div>
-    </section>
 
-    <!-- Hidden Password-Protected Admin Panel -->
-    <div id="admin-panel">
-        <h2>👑 Nuzhat Parveen Admin Dashboard</h2>
-        <form id="upload-form">
-            <div class="admin-form-group">
-                <label>Product Title / Naam</label>
-                <input type="text" id="prod-title" required placeholder="Jaise: Premium Blue Trackpant">
+            <div class="form-group">
+                <label>Select File (Photo or Video)</label>
+                <input type="file" id="upload-photo" accept="image/*,video/*">
             </div>
-            <div class="admin-form-group">
-                <label>Short Description / Details</label>
-                <input type="text" id="prod-desc" required placeholder="Jaise: Wholesale Pack, Available in M, L, XL sizes">
-            </div>
-            <div class="admin-form-group">
-                <label>Choose Garment Photo (Direct Mobile Upload)</label>
-                <input type="file" id="prod-image" accept="image/*" required>
-            </div>
-            <button type="submit" class="admin-btn" id="submit-btn">Upload & Make Live 🚀</button>
-        </form>
 
-        <div class="manage-products">
-            <h3 style="margin-bottom: 10px; color: #f1f5f9; font-size: 16px;">Manage Uploaded Items (Delete Karein)</h3>
-            <div id="manage-list">
-                <!-- List of items with delete buttons will appear here -->
-            </div>
+            <button type="button" class="btn" onclick="uploadVarietyMedia()" style="width: 100%; background-color: #2b6cb0; margin-top: 10px; margin-bottom: 15px;">
+                💾 Save Media to Live Gallery
+            </button>
+            
+            <button type="button" class="btn" onclick="logoutAdmin()" style="width: 100%; background-color: #4a5568; margin-top: 5px;">
+                🔒 Logout Admin
+            </button>
+            
+            <div id="upload-status" style="font-weight:bold; color:#38bdf8; text-align: center; margin-top:10px;"></div>
         </div>
     </div>
 
-    <!-- Booking Forms Section -->
-    <section id="booking">
-        <h2 class="section-title">Online Order Booking Desk</h2>
-        <p style="text-align: center; margin-bottom: 40px; color: #4a5568;">Apne business ya personal use ke hisaab se sahi form chun kar apna order book karein:</p>
-        
-        <div class="order-container">
-            <!-- Wholesale Form -->
-            <div class="order-box wholesale-box">
-                <h3>🗲 Wholesale Bulk Booking (Thok Order)</h3>
-                <form action="#" method="POST" onsubmit="alert('Wholesale Booking Received! Hum jald hi aapke Business par sampark karenge.'); return false;">
-                    <div class="form-group"><label>Dukan / Company Ka Naam</label><input type="text" required placeholder="Enter Shop / Firm Name"></div>
-                    <div class="form-group"><label>Wholesaler Ka Naam</label><input type="text" required placeholder="Enter Your Full Name"></div>
-                    <div class="form-group"><label>Mobile / WhatsApp No.</label><input type="tel" required placeholder="Enter Mobile Number"></div>
-                    <div class="form-group">
-                        <label>Product Ka Chunaav</label>
-                        <select required>
-                            <option value="">-- Select Product --</option>
-                            <option value="trousers">Sports Trousers (Bulk)</option>
-                            <option value="tshirts">T-Shirts (Bulk)</option>
-                            <option value="jackets">Windcheater Jackets (Bulk)</option>
-                            <option value="petticoats">Petticoats (Bulk)</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Bulk Quantity Details</label><textarea rows="3" required placeholder="Jaise: Sports Trouser - 200 Pieces (M, L, XL)..."></textarea></div>
-                    <button type="submit" class="btn" style="width: 100%; background-color: #1a365d;">Submit Wholesale Booking</button>
-                </form>
-            </div>
+    <footer><p>&copy; 2026 <strong>Prince Premium</strong>. All Rights Reserved.</p></footer>
 
-            <!-- Retail Form -->
-            <div class="order-box retail-box">
-                <h3>🛍 Retail Direct Order (Chutkar Order)</h3>
-                <form action="#" method="POST" onsubmit="alert('Retail Order Booked! Hum packing aur delivery ke liye aapse baat karenge.'); return false;">
-                    <div class="form-group"><label>Customer Ka Naam</label><input type="text" required placeholder="Enter Your Name"></div>
-                    <div class="form-group"><label>Mobile / Delivery Number</label><input type="tel" required placeholder="Enter Mobile Number"></div>
-                    <div class="form-group"><label>Delivery Ka Pura Pata (Address)</label><input type="text" required placeholder="Enter Full Address with Pincode"></div>
-                    <div class="form-group">
-                        <label>Kaunsa Item Chahiye?</label>
-                        <select required>
-                            <option value="">-- Select Product --</option>
-                            <option value="trouser-single">Sports Trouser (1-5 Pcs)</option>
-                            <option value="tshirt-single">Premium T-Shirt (1-5 Pcs)</option>
-                            <option value="jacket-single">Windcheater Jacket (1-2 Pcs)</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Size aur Color ki jankari</label><textarea rows="3" required placeholder="Jaise: Size L, Black Color..."></textarea></div>
-                    <button type="submit" class="btn" style="width: 100%;">Book Retail Order</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2026 <strong>Prince Premium</strong>. Quality Garments Factory. All Rights Reserved.</p>
-        <span class="admin-login-link" onclick="loginAdmin()">👑 Admin Login</span>
-    </footer>
-
-    <!-- Firebase Connection and Logic Script -->
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCnAObkRA9eYPwpk44Q6YS5NY1BlZUdAeM",
-            authDomain: "prince-primium.firebaseapp.com",
-            projectId: "prince-primium",
-            storageBucket: "prince-primium.firebasestorage.app",
-            messagingSenderId: "182442384742",
-            appId: "1:182442384742:web:3dce7d5090e5d2d4e33ca7"
-        };
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+    
+    let db = null, storage = null;
+    let isAdminActive = false;
 
-        // Initialize Firebase & Firestore Database
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    // Default Categories list to track locally if Firebase is absent
+    let dynamicCategories = ['petticoats', 'tshirts', 'trousers', 'jackets', 'winchester'];
+    let localMediaStock = {};
 
-        const grid = document.getElementById('dynamic-product-grid');
-        const manageList = document.getElementById('manage-list');
-        const noProdMsg = document.getElementById('no-products-msg');
+    // Tracking state for 360 interactivity
+    let rotationStates = {};
 
-        // 1. Database se live items nikal kar page par dikhana
-        db.collection('products').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-            grid.innerHTML = '';
-            manageList.innerHTML = '';
-            
-            if(snapshot.empty) {
-                grid.appendChild(noProdMsg);
-                manageList.innerHTML = '<p style="color: #cbd5e1; font-size:13px;">No items to delete.</p>';
-                return;
-            }
+    if(firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            storage = firebase.storage();
+        } catch(e) { console.log("Firebase bypass setup."); }
+    }
 
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const id = doc.id;
+    window.onload = function() {
+        if(db) {
+            db.ref('categories').on('value', (snap) => {
+                let data = snap.val();
+                if(data) {
+                    dynamicCategories = Object.values(data);
+                }
+                buildStructureAndLoadStock();
+            });
+        } else {
+            dynamicCategories.forEach(c => localMediaStock[c] = {});
+            buildStructureAndLoadStock();
+        }
+    };
 
-                // Website Front page ke grid mein photo jodna
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.style.border = '2px dashed #cbd5e0';
-                card.innerHTML = `
-                    <div class="product-img" style="background-image: url('${data.image}');"></div>
-                    <div class="product-info">
-                        <span style="background: #10b981; color: white; padding: 2px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">LIVE STOCK</span>
-                        <h3 style="margin-top: 5px;">${data.title}</h3>
-                        <p>${data.desc}</p>
+    function buildStructureAndLoadStock() {
+        const grid = document.getElementById("main-product-grid");
+        const selectDrop = document.getElementById("upload-category");
+        
+        grid.innerHTML = "";
+        selectDrop.innerHTML = "";
+
+        dynamicCategories.forEach((cat) => {
+            let opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat.toUpperCase();
+            selectDrop.appendChild(opt);
+
+            let cleanedId = cat.replace(/\s+/g, '-').toLowerCase();
+            let cardWrapper = document.createElement('div');
+            cardWrapper.className = 'product-card-container';
+            cardWrapper.innerHTML = `
+                <div class="product-card" id="card-${cleanedId}">
+                    <div class="product-img" id="img-container-${cleanedId}" onclick="openMediaZoom('${cleanedId}')">
+                        <div id="media-viewport-${cleanedId}" style="width:100%; height:100%;">
+                           <div style="padding-top:100px; text-align:center; color:#64748b;">No Design Added</div>
+                        </div>
+                        <button class="btn-360-trigger" id="btn-360-${cleanedId}" onclick="event.stopPropagation(); toggle360Rotation('${cleanedId}')">🔄 360° Rotate</button>
                     </div>
-                `;
-                grid.appendChild(card);
+                    <div class="product-info">
+                        <h3>${cat}</h3>
+                        <p>Premium factory design array collection.</p>
+                        <div class="color-gallery-box">
+                            <span style="font-size: 11px; font-weight: bold; color: #94a3b8;">Available Designs:</span>
+                            <div class="gallery-preview-container" id="gallery-${cleanedId}"></div>
+                        </div>
+                        <button class="order-btn" onclick="event.stopPropagation(); redirectToWhatsApp('${cat}')">🛒 Book Order on WhatsApp</button>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(cardWrapper);
 
-                // Admin Dashboard mein delete karne wali list banana
-                const manageItem = document.createElement('div');
-                manageItem.className = 'manage-item';
-                manageItem.innerHTML = `
-                    <span style="font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;">${data.title}</span>
-                    <button class="delete-btn" onclick="deleteProduct('${id}')">Delete</button>
-                `;
-                manageList.appendChild(manageItem);
+            if(db) {
+                db.ref('factory_stock/' + cleanedId).on('value', (snapshot) => {
+                    renderGallery(cleanedId, snapshot.val());
+                });
+            } else {
+                renderGallery(cleanedId, localMediaStock[cat]);
+            }
+        });
+
+        setup3DTiltEffect();
+    }
+
+    function setup3DTiltEffect() {
+        const cards = document.querySelectorAll('.product-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                // Only apply 3D tilt if this card is NOT currently being rotated in 360 mode
+                let cleanedId = card.id.replace('card-', '');
+                if (rotationStates[cleanedId] && rotationStates[cleanedId].active) return;
+
+                let rect = card.getBoundingClientRect();
+                let x = e.clientX - rect.left - (rect.width/2);
+                let y = e.clientY - rect.top - (rect.height/2);
+                card.style.transform = `rotateY(${x / 12}deg) rotateX(${-y / 12}deg) translateZ(10px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                let cleanedId = card.id.replace('card-', '');
+                if (rotationStates[cleanedId] && rotationStates[cleanedId].active) return;
+                card.style.transform = `rotateY(0deg) rotateX(0deg) translateZ(0px)`;
             });
         });
+    }
 
-        // 2. Chhupa hua Admin Panel kholne ka code (Password check with Nuzhat Greetings)
-        function loginAdmin() {
-            const pass = prompt("Enter Prince Premium Admin Password:");
-            if (pass === "prince123") {
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
-                alert("Welcome Nuzhat Parveen! Admin panel niche khul gaya hai.");
-            } else {
-                alert("Galat Password! Sirf Owner hi photo upload kar sakte hain.");
-            }
+    function addNewCategoryDynamic() {
+        let nameInput = document.getElementById("new-cat-name").value.trim().toLowerCase();
+        if(!nameInput) { alert("Category ka naam likhein!"); return; }
+        
+        if(dynamicCategories.includes(nameInput)) {
+            alert("Ye category pehle se bani hui hai!"); return;
         }
 
-        // 3. Image ko Compress karke Database mein save karne ka advanced hacking function
-        document.getElementById('upload-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const btn = document.getElementById('submit-btn');
-            const title = document.getElementById('prod-title').value;
-            const desc = document.getElementById('prod-desc').value;
-            const fileInput = document.getElementById('prod-image');
-            
-            if (fileInput.files.length === 0) return;
-            
-            btn.innerText = "Compressing & Uploading... Wait 5 sec";
-            btn.style.backgroundColor = "#64748b";
-            btn.disabled = true;
+        if(db) {
+            db.ref('categories').push(nameInput).then(() => {
+                document.getElementById("new-cat-name").value = "";
+                alert("New Category Dynamic Live Ho Gayi!");
+            });
+        } else {
+            dynamicCategories.push(nameInput);
+            localMediaStock[nameInput] = {};
+            buildStructureAndLoadStock();
+            document.getElementById("new-cat-name").value = "";
+            alert("Local Preview Category Created!");
+        }
+    }
 
-            const file = fileInput.files[0];
-            const reader = new FileReader();
+    function renderGallery(cleanedId, data) {
+        const container = document.getElementById("gallery-" + cleanedId);
+        const viewport = document.getElementById("media-viewport-" + cleanedId);
+        const btn360 = document.getElementById("btn-360-" + cleanedId);
+        if(!container) return;
+
+        container.innerHTML = "";
+        
+        // Reset 360 state for this card on gallery load
+        if(rotationStates[cleanedId]) {
+            rotationStates[cleanedId].active = false;
+        }
+        
+        if(data && Object.keys(data).length > 0) {
+            let firstKey = Object.keys(data)[0];
+            let firstItem = data[firstKey];
             
-            reader.readAsDataURL(file);
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
+            setMainDisplay(viewport, firstItem.url, firstItem.type, btn360, cleanedId);
+
+            Object.keys(data).forEach(key => {
+                const item = data[key];
+                const divWrapper = document.createElement('div');
+                divWrapper.className = 'mini-card-wrapper';
                 
-                img.onload = function() {
-                    // HTML5 Canvas ka use karke photo ka size 10 guna chota (compress) karna
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 500; // Mobile screen ke liye ekdum best width
-                    const MAX_HEIGHT = 500;
-                    let width = img.width;
-                    let height = img.height;
+                let displayState = isAdminActive ? 'block' : 'none';
+                let previewThumb = item.type === 'video' ? 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=80' : item.url;
+                
+                divWrapper.innerHTML = `
+                    <img src="${previewThumb}" class="mini-gallery-img" style="filter: ${item.type === 'video' ? 'hue-rotate(90deg)' : 'none'}" onclick="event.stopPropagation(); triggerMainChange('${cleanedId}', '${item.url}', '${item.type}')">
+                    <button class="del-mini-btn" style="display: ${displayState}" onclick="event.stopPropagation(); deleteVariety('${cleanedId}', '${key}')">×</button>
+                `;
+                container.appendChild(divWrapper);
+            });
+        } else {
+            viewport.innerHTML = `<div style="padding-top:100px; text-align:center; color:#64748b;">No Design Added</div>`;
+            if(btn360) btn360.style.display = "none";
+        }
+    }
 
-                    if (width > height) {
-                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                    } else {
-                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // High quality text base64 string mein badalna
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+    function setMainDisplay(targetDiv, url, type, btn360, cleanedId) {
+        if(type === 'video') {
+            targetDiv.innerHTML = `<video class="product-media-file" src="${url}" autoplay muted loop playsinline controls></video>`;
+            if(btn360) btn360.style.display = "none"; // Hide 360 button for videos
+        } else {
+            targetDiv.innerHTML = `<div class="product-media-file" id="media-img-${cleanedId}" style="background: url('${url}') center center/cover; transition: background-position 0.05s ease;"></div>`;
+            if(btn360) btn360.style.display = "block"; // Show 360 button for photos
+        }
+        
+        targetDiv.parentElement.setAttribute('data-current-url', url);
+        targetDiv.parentElement.setAttribute('data-current-type', type);
+    }
 
-                    // Firestore database mein direct entry karna
-                    db.collection('products').add({
-                        title: title,
-                        desc: desc,
-                        image: compressedBase64,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(() => {
-                        alert("🎉 Badhai Ho! Naya item kamyaabi se live ho gaya hai.");
-                        document.getElementById('upload-form').reset();
-                        btn.innerText = "Upload & Make Live 🚀";
-                        btn.style.backgroundColor = "#10b981";
-                        btn.disabled = false;
-                    }).catch((error) => {
-                        alert("Error updating database: " + error.message);
-                        btn.disabled = false;
-                    });
-                };
+    function triggerMainChange(cleanedId, url, type) {
+        const viewport = document.getElementById("media-viewport-" + cleanedId);
+        const btn360 = document.getElementById("btn-360-" + cleanedId);
+        
+        // Turn off rotation if switching main items
+        if(rotationStates[cleanedId]) {
+            rotationStates[cleanedId].active = false;
+            let mainCard = document.getElementById("card-" + cleanedId);
+            if(mainCard) mainCard.style.transform = "rotateY(0deg) rotateX(0deg)";
+        }
+        
+        setMainDisplay(viewport, url, type, btn360, cleanedId);
+    }
+
+    // Interactive 360 Engine
+    function toggle360Rotation(cleanedId) {
+        if(!rotationStates[cleanedId]) {
+            rotationStates[cleanedId] = { active: false, startX: 0, currentPos: 50 };
+        }
+        
+        let state = rotationStates[cleanedId];
+        state.active = !state.active;
+        
+        let btn = document.getElementById("btn-360-" + cleanedId);
+        let mainCard = document.getElementById("card-" + cleanedId);
+        let targetImg = document.getElementById("media-img-" + cleanedId);
+        
+        if(state.active) {
+            btn.innerText = "🛑 Stop 360";
+            btn.style.background = "#4a5568";
+            mainCard.style.transform = "rotateY(0deg) rotateX(0deg) scale(1.02)";
+            alert("Slide/Drag over the picture to rotate it 360° horizontally!");
+
+            // Mouse and Touch Binding for horizontal panning
+            const startPan = (e) => {
+                if(!state.active) return;
+                state.isDragging = true;
+                state.startX = e.pageX || e.touches[0].pageX;
             };
-        });
 
-        // 4. Purani ya biki hui product photo website se delete karne ka code
-        function deleteProduct(id) {
-            if (confirm("Kya aap sach mein is product ko website se hatana chahte hain?")) {
-                db.collection('products').doc(id).delete().then(() => {
-                    alert("Item deleted successfully!");
+            const movePan = (e) => {
+                if(!state.active || !state.isDragging) return;
+                let currentX = e.pageX || e.touches[0].pageX;
+                let diff = currentX - state.startX;
+                
+                // Shift background-position X axis dynamically
+                state.currentPos += diff * 0.4; 
+                targetImg.style.backgroundPosition = `${state.currentPos}% center`;
+                state.startX = currentX;
+            };
+
+            const stopPan = () => { state.isDragging = false; };
+
+            targetImg.addEventListener('mousedown', startPan);
+            targetImg.addEventListener('mousemove', movePan);
+            window.addEventListener('mouseup', stopPan);
+
+            targetImg.addEventListener('touchstart', startPan, {passive: true});
+            targetImg.addEventListener('touchmove', movePan, {passive: true});
+            window.addEventListener('touchend', stopPan);
+        } else {
+            btn.innerText = "🔄 360° Rotate";
+            btn.style.background = "rgba(229, 62, 62, 0.9)";
+            mainCard.style.transform = "rotateY(0deg) rotateX(0deg)";
+            targetImg.style.backgroundPosition = "center center";
+        }
+    }
+
+    function openMediaZoom(cleanedId) {
+        // Prevent zoom preview modal if 360 mode is actively rotating
+        if(rotationStates[cleanedId] && rotationStates[cleanedId].active) return;
+
+        const imgContainer = document.getElementById("img-container-" + cleanedId);
+        let url = imgContainer.getAttribute('data-current-url');
+        let type = imgContainer.getAttribute('data-current-type');
+        
+        if(!url) return;
+        
+        const modalContent = document.getElementById("modalContent");
+        if(type === 'video') {
+            modalContent.innerHTML = `<video src="${url}" controls autoplay loop style="width:100%; max-height:80vh;"></video>`;
+        } else {
+            modalContent.innerHTML = `<img src="${url}" style="width:100%; max-height:80vh; object-fit:contain;" />`;
+        }
+        document.getElementById("imageModal").style.display = "flex";
+    }
+
+    function closeFullPreview() {
+        document.getElementById("imageModal").style.display = "none";
+        document.getElementById("modalContent").innerHTML = "";
+    }
+
+    function redirectToWhatsApp(productName) {
+        let phoneNumber = "919339874507";
+        let message = `Hello Prince Premium, mujhe aapke industry showroom se '${productName}' ki variety pasand aayi hai. Mujhe deals aur order booking ki details chahiye.`;
+        window.open("https://wa.me/" + phoneNumber + "?text=" + encodeURIComponent(message), "_blank");
+    }
+
+    function uploadVarietyMedia() {
+        const cat = document.getElementById("upload-category").value;
+        const fileInput = document.getElementById("upload-photo");
+        const file = fileInput.files[0];
+        const statusDiv = document.getElementById('upload-status');
+
+        if(!file) { alert("Pehle design ki Photo ya Video select karein!"); return; }
+        
+        let fileType = file.type.startsWith('video') ? 'video' : 'image';
+        let cleanedId = cat.replace(/\s+/g, '-').toLowerCase();
+        const localUrl = URL.createObjectURL(file);
+
+        if(!db) {
+            const tempKey = 'local_' + Date.now();
+            if(!localMediaStock[cat]) localMediaStock[cat] = {};
+            localMediaStock[cat][tempKey] = { url: localUrl, type: fileType };
+            renderGallery(cleanedId, localMediaStock[cat]);
+            statusDiv.innerText = "⚡ Local Mode Saved successfully!";
+            fileInput.value = "";
+            return;
+        }
+
+        statusDiv.innerText = "Uploading Media file... ⏳";
+        const storagePath = 'varieties/' + cleanedId + '/' + Date.now() + '_' + file.name;
+        
+        storage.ref(storagePath).put(file).then((snapshot) => {
+            snapshot.ref.getDownloadURL().then((url) => {
+                db.ref('factory_stock/' + cleanedId).push({
+                    url: url,
+                    type: fileType,
+                    storagePath: storagePath
+                }).then(() => {
+                    statusDiv.innerText = "🎉 Live Saved successfully on Cloud!";
+                    fileInput.value = "";
+                });
+            });
+        }).catch(err => {
+            statusDiv.innerText = "Upload failed verification.";
+        });
+    }
+
+    function deleteVariety(cleanedId, key) {
+        if(!isAdminActive) { alert("Security Error!"); return; }
+        
+        if(confirm("Kya aap ise gallery se hatana chahte hain?")) {
+            if(!db) {
+                let originalCat = dynamicCategories.find(c => c.replace(/\s+/g, '-').toLowerCase() === cleanedId);
+                delete localMediaStock[originalCat][key];
+                renderGallery(cleanedId, localMediaStock[originalCat]);
+                return;
+            }
+            db.ref('factory_stock/' + cleanedId + '/' + key).once('value').then(snap => {
+                const data = snap.val();
+                if(data && data.storagePath) {
+                    storage.ref(data.storagePath).delete().catch(()=> {});
+                }
+                db.ref('factory_stock/' + cleanedId + '/' + key).remove();
+            });
+        }
+    }
+
+    function toggleAdminPanel() {
+        var panel = document.getElementById("secure-admin-panel");
+        panel.style.display = panel.style.display === "none" ? "block" : "none";
+    }
+    
+    function verifyAdminPIN() {
+        var pinInput = document.getElementById("admin-pin").value;
+        if(pinInput === "786786") {
+            isAdminActive = true;
+            document.getElementById("auth-box").style.display = "none";
+            document.getElementById("admin-controls").style.display = "block";
+            refreshAllViews();
+            alert("Welcome Admin! Access Granted.");
+        } else { alert("Wrong PIN!"); }
+    }
+
+    function logoutAdmin() {
+        isAdminActive = false;
+        document.getElementById("admin-pin").value = "";
+        document.getElementById("auth-box").style.display = "block";
+        document.getElementById("admin-controls").style.display = "none";
+        document.getElementById("secure-admin-panel").style.display = "none";
+        refreshAllViews();
+        alert("Logged Out Successfully!");
+    }
+
+    function refreshAllViews() {
+        dynamicCategories.forEach(cat => {
+            let cleanedId = cat.replace(/\s+/g, '-').toLowerCase();
+            if(!db) {
+                renderGallery(cleanedId, localMediaStock[cat]);
+            } else {
+                db.ref('factory_stock/' + cleanedId).once('value', (snapshot) => {
+                    renderGallery(cleanedId, snapshot.val());
                 });
             }
-        }
+        });
+    }
     </script>
 </body>
 </html>
